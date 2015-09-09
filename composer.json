@@ -1,0 +1,23 @@
+{
+  "require": {
+    "guzzlehttp/guzzle": "~6"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4",
+    "corley/influxdb-sdk": ">=0.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "InfluxDB\\": "src/"
+    },
+    "files": [
+      "src/Handler/MessageHandler.php",
+      "src/Handler/ExceptionHandler.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "InfluxDB\\": "tests/"
+    }
+  }
+}
