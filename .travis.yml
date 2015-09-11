@@ -1,0 +1,30 @@
+language: php
+
+php:
+  - 5.5
+  - 5.6
+  - 7
+
+env:
+  - INFLUXDB_DEB="influxdb_0.9.3_amd64.deb"
+  - INFLUXDB_DEB="influxdb_nightly_amd64.deb"
+
+before_install:
+  - wget http://s3.amazonaws.com/influxdb/${INFLUXDB_DEB}
+  - sudo useradd influxdb
+  - sudo dpkg -i ${INFLUXDB_DEB}
+  - travis_retry sudo service influxdb restart
+  - sudo service influxdb status
+  - /opt/influxdb/influx -version
+
+before_script:
+  - composer selfupdate
+  - composer install --prefer-source --no-interaction
+
+script:
+  - vendor/bin/phpunit --coverage-clover=clover.xml
+
+matrix:
+  allow_failures:
+    - env: INFLUXDB_DEB="influxdb_nightly_amd64.deb"
+

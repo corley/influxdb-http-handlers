@@ -1,4 +1,5 @@
 {
+  "name": "corley/influxdb-http-handlers",
   "require": {
     "guzzlehttp/guzzle": "~6"
   },

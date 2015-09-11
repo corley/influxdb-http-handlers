@@ -1,5 +1,7 @@
 # InfluxDB response handlers
 
+[![Build Status](https://travis-ci.org/wdalmut/influxdb-http-handlers.svg?branch=master)](https://travis-ci.org/wdalmut/influxdb-http-handlers)
+
 Thanks to GuzzleHTTP middleware infrastructure we can convert HTTP responses
 from InfluxDB in a more simple data structure, in the same way we can also
 manage query errors.
