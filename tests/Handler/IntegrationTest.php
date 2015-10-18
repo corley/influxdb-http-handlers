@@ -7,6 +7,11 @@ use GuzzleHttp\Client as HttpClient;
 use InfluxDB\Client;
 use InfluxDB\Options;
 use InfluxDB\Adapter\GuzzleAdapter;
+use InfluxDB\Adapter\Http;
+use InfluxDB\Manager;
+use InfluxDB\Query\CreateDatabase;
+use InfluxDB\Query\DeleteDatabase;
+use InfluxDB\Query\GetDatabases;
 
 class IntegrationTest extends \PHPUnit_Framework_TestCase
 {
@@ -47,11 +52,13 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 
         $http = new HttpClient(['handler' => $stack]);
 
-        $options = new Options();
+        $options = new Http\Options();
         $options->setDatabase("mydb");
-        $adapter = new GuzzleAdapter($http, $options);
 
-        $client = new Client($adapter);
+        $reader = new Http\Reader($http, $options);
+        $writer = new Http\Writer($http, $options);
+
+        $client = new Client($reader, $writer);
 
         $response = $client->query("SELECT * FROM cpu,mem");
 
@@ -75,16 +82,25 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $options = $this->options = new Options();
+        $options = $this->options = new Http\Options();
         $guzzleHttp = new HttpClient();
-        $adapter = new GuzzleAdapter($guzzleHttp, $options);
-        $client = $this->client = new Client($adapter);
+        $writer = new Http\Writer($guzzleHttp, $options);
+        $reader = new Http\Reader($guzzleHttp, $options);
+        $client = new Client($reader, $writer);
+
+        $this->client = new Manager($client);
+        $this->client->addQuery(new CreateDatabase());
+        $this->client->addQuery(new DeleteDatabase());
+        $this->client->addQuery(new GetDatabases());
+
         $this->dropAll();
     }
+
     public function tearDown()
     {
         $this->dropAll();
     }
+
     private function dropAll()
     {
         $databases = $this->getClient()->getDatabases();
